@@ -44,6 +44,7 @@
 
     bindKeyboard();
     bindTouch();
+    bindResize();
     applyTheme();
 
     // 초기 렌더링
@@ -394,6 +395,19 @@
 
       handleMove(direction);
     }, { passive: true });
+  }
+
+  /** 화면 크기 변경 시 타일 위치 재계산 */
+  function bindResize() {
+    let resizeTimer;
+    window.addEventListener('resize', function () {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(function () {
+        if (!isAnimating) {
+          render();
+        }
+      }, 100);
+    });
   }
 
   // ─── 테마 ────────────────────────────────────────────────
