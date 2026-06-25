@@ -1,0 +1,433 @@
+/* ─── 2048 Game Styles ─────────────────────────────────── */
+
+/* ─── CSS Variables: Light Mode ────────────────────────── */
+:root {
+  --game-bg: #faf8ef;
+  --grid-bg: #bbada0;
+  --cell-bg: #cdc1b4;
+  --text-dark: #776e65;
+  --text-light: #f9f6f2;
+  --heading-color: #776e65;
+  --score-bg: #bbada0;
+  --score-label: #eee4da;
+  --score-value: #ffffff;
+  --btn-bg: #8f7a66;
+  --btn-text: #f9f6f2;
+  --overlay-bg: rgba(238, 228, 218, 0.73);
+  --overlay-text: #776e65;
+  --hint-text: #776e65;
+}
+
+/* ─── Dark Mode ────────────────────────────────────────── */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --game-bg: #1a1a2e;
+    --grid-bg: #3d3a33;
+    --cell-bg: #4a4740;
+    --heading-color: #eee4da;
+    --score-bg: #3d3a33;
+    --score-label: rgba(238, 228, 218, 0.5);
+    --score-value: #ffffff;
+    --btn-bg: #8f7a66;
+    --btn-text: #f9f6f2;
+    --overlay-bg: rgba(26, 26, 46, 0.75);
+    --overlay-text: #f9f6f2;
+    --hint-text: #a0998f;
+  }
+}
+
+[data-theme="dark"] {
+  --game-bg: #1a1a2e;
+  --grid-bg: #3d3a33;
+  --cell-bg: #4a4740;
+  --heading-color: #eee4da;
+  --score-bg: #3d3a33;
+  --score-label: rgba(238, 228, 218, 0.5);
+  --score-value: #ffffff;
+  --btn-bg: #8f7a66;
+  --btn-text: #f9f6f2;
+  --overlay-bg: rgba(26, 26, 46, 0.75);
+  --overlay-text: #f9f6f2;
+  --hint-text: #a0998f;
+}
+
+/* ─── Reset & Base ─────────────────────────────────────── */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background-color: var(--game-bg);
+  color: var(--text-dark);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 20px;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* ─── Game Container ───────────────────────────────────── */
+#game-container {
+  width: min(90vw, 500px);
+  max-width: 500px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+/* ─── Header ───────────────────────────────────────────── */
+.game-header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.game-title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: var(--heading-color);
+  line-height: 1;
+}
+
+/* ─── Score Board ──────────────────────────────────────── */
+.scores {
+  display: flex;
+  gap: 8px;
+}
+
+.score-box {
+  background: var(--score-bg);
+  border-radius: 6px;
+  padding: 8px 20px;
+  text-align: center;
+  min-width: 80px;
+}
+
+.score-label {
+  font-size: 0.7rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--score-label);
+}
+
+.score-value {
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: var(--score-value);
+  line-height: 1.2;
+}
+
+/* ─── Controls ─────────────────────────────────────────── */
+.game-controls {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.btn {
+  background: var(--btn-bg);
+  color: var(--btn-text);
+  border: none;
+  border-radius: 6px;
+  padding: 10px 20px;
+  font-size: 0.9rem;
+  font-weight: bold;
+  cursor: pointer;
+  min-height: 44px;
+  min-width: 44px;
+  transition: opacity 0.15s;
+}
+
+.btn:hover {
+  opacity: 0.85;
+}
+
+.btn:active {
+  opacity: 0.7;
+}
+
+/* ─── Grid ─────────────────────────────────────────────── */
+.grid-wrapper {
+  width: 100%;
+  aspect-ratio: 1;
+  background: var(--grid-bg);
+  border-radius: 8px;
+  padding: 10px;
+  position: relative;
+}
+
+#grid-container {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(4, 1fr);
+  gap: 10px;
+  position: relative;
+}
+
+/* ─── Empty Cells ──────────────────────────────────────── */
+.grid-cell {
+  background: var(--cell-bg);
+  border-radius: 6px;
+}
+
+/* ─── Tiles ────────────────────────────────────────────── */
+.tile {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  font-size: 2rem;
+  font-weight: bold;
+  z-index: 10;
+  transition: transform 100ms ease-in-out;
+}
+
+/* Tile value-specific colors */
+.tile-2 {
+  background: #eee4da;
+  color: var(--text-dark);
+}
+
+.tile-4 {
+  background: #ede0c8;
+  color: var(--text-dark);
+}
+
+.tile-8 {
+  background: #f2b179;
+  color: var(--text-light);
+}
+
+.tile-16 {
+  background: #f59563;
+  color: var(--text-light);
+}
+
+.tile-32 {
+  background: #f67c5f;
+  color: var(--text-light);
+}
+
+.tile-64 {
+  background: #f65e3b;
+  color: var(--text-light);
+}
+
+.tile-128 {
+  background: #edcf72;
+  color: var(--text-light);
+}
+
+.tile-256 {
+  background: #edcc61;
+  color: var(--text-light);
+}
+
+.tile-512 {
+  background: #edc850;
+  color: var(--text-light);
+}
+
+.tile-1024 {
+  background: #edc53f;
+  color: var(--text-light);
+}
+
+.tile-2048 {
+  background: #edc22e;
+  color: var(--text-light);
+}
+
+.tile-super {
+  background: #3c3a32;
+  color: var(--text-light);
+}
+
+/* ─── Tile Font Sizes by Digit Count ───────────────────── */
+.tile-digits-2 {
+  font-size: 1.8rem;
+}
+
+.tile-digits-3 {
+  font-size: 1.5rem;
+}
+
+.tile-digits-4 {
+  font-size: 1.2rem;
+}
+
+/* ─── Tile Animations ──────────────────────────────────── */
+
+/* 새 타일 등장 */
+.tile-new {
+  animation: tile-appear 150ms ease-in-out;
+}
+
+@keyframes tile-appear {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* 병합 펄스 */
+.tile-merged {
+  animation: tile-merge 100ms ease-in-out;
+}
+
+@keyframes tile-merge {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.15);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* ─── Overlays ─────────────────────────────────────────── */
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--overlay-bg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  border-radius: 8px;
+  z-index: 100;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 300ms ease;
+}
+
+.overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.overlay-message {
+  font-size: 2rem;
+  font-weight: bold;
+  color: var(--overlay-text);
+}
+
+.overlay-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+/* ─── Hint ─────────────────────────────────────────────── */
+.game-hint {
+  font-size: 0.85rem;
+  color: var(--hint-text);
+  text-align: center;
+}
+
+/* ─── Responsive ───────────────────────────────────────── */
+@media (max-width: 520px) {
+  body {
+    padding: 12px;
+  }
+
+  .game-title {
+    font-size: 2rem;
+  }
+
+  .score-box {
+    padding: 6px 14px;
+    min-width: 65px;
+  }
+
+  .score-value {
+    font-size: 1.1rem;
+  }
+
+  .score-label {
+    font-size: 0.6rem;
+  }
+
+  #grid-container {
+    gap: 8px;
+  }
+
+  .grid-wrapper {
+    padding: 8px;
+    border-radius: 6px;
+  }
+
+  .tile {
+    font-size: 1.6rem;
+    border-radius: 4px;
+  }
+
+  .tile-digits-2 {
+    font-size: 1.4rem;
+  }
+
+  .tile-digits-3 {
+    font-size: 1.2rem;
+  }
+
+  .tile-digits-4 {
+    font-size: 1rem;
+  }
+
+  .btn {
+    padding: 8px 16px;
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .game-title {
+    font-size: 1.6rem;
+  }
+
+  #grid-container {
+    gap: 6px;
+  }
+
+  .grid-wrapper {
+    padding: 6px;
+  }
+
+  .tile {
+    font-size: 1.3rem;
+  }
+
+  .tile-digits-2 {
+    font-size: 1.15rem;
+  }
+
+  .tile-digits-3 {
+    font-size: 1rem;
+  }
+
+  .tile-digits-4 {
+    font-size: 0.85rem;
+  }
+}
